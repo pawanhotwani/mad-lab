@@ -1,0 +1,175 @@
+//Create a flutter app to implement a temperature conversion page and an Age calculator 
+page. Use the drawer widget to demonstrate the navigation between both pages. //
+
+
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Converter & Calculator',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: TemperatureConverterPage(),
+    );
+  }
+}
+
+class AppDrawer extends StatelessWidget {
+  final BuildContext context;
+
+  AppDrawer(this.context);
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        children: [
+          DrawerHeader(
+            child: Text('Navigation', style: TextStyle(color: Colors.white, fontSize: 24)),
+            decoration: BoxDecoration(color: Colors.blue),
+          ),
+          ListTile(
+            title: Text('Temperature Converter'),
+            onTap: () {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (_) => TemperatureConverterPage()));
+            },
+          ),
+          ListTile(
+            title: Text('Age Calculator'),
+            onTap: () {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (_) => AgeCalculatorPage()));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TemperatureConverterPage extends StatefulWidget {
+  @override
+  _TemperatureConverterPageState createState() => _TemperatureConverterPageState();
+}
+
+class _TemperatureConverterPageState extends State<TemperatureConverterPage> {
+  TextEditingController _controller = TextEditingController();
+  String result = '';
+
+  void convertToFahrenheit() {
+    double celsius = double.tryParse(_controller.text) ?? 0;
+    double fahrenheit = (celsius * 9 / 5) + 32;
+    setState(() {
+      result = '$celsius °C = ${fahrenheit.toStringAsFixed(2)} °F';
+    });
+  }
+
+  void convertToCelsius() {
+    double fahrenheit = double.tryParse(_controller.text) ?? 0;
+    double celsius = (fahrenheit - 32) * 5 / 9;
+    setState(() {
+      result = '$fahrenheit °F = ${celsius.toStringAsFixed(2)} °C';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Temperature Converter')),
+      drawer: AppDrawer(context),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _controller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Enter value'),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(onPressed: convertToFahrenheit, child: Text('To °F')),
+                ElevatedButton(onPressed: convertToCelsius, child: Text('To °C')),
+              ],
+            ),
+            SizedBox(height: 20),
+            Text(result, style: TextStyle(fontSize: 18)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AgeCalculatorPage extends StatefulWidget {
+  @override
+  _AgeCalculatorPageState createState() => _AgeCalculatorPageState();
+}
+
+class _AgeCalculatorPageState extends State<AgeCalculatorPage> {
+  DateTime? selectedDate;
+  String ageResult = '';
+
+  void _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null) {
+      setState(() {
+        selectedDate = picked;
+        calculateAge();
+      });
+    }
+  }
+
+  void calculateAge() {
+    if (selectedDate == null) return;
+
+    DateTime today = DateTime.now();
+    int years = today.year - selectedDate!.year;
+    int months = today.month - selectedDate!.month;
+    int days = today.day - selectedDate!.day;
+
+    if (months < 0 || (months == 0 && days < 0)) {
+      years--;
+    }
+
+    setState(() {
+      ageResult = 'You are $years years old';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String birthDateStr = selectedDate == null
+        ? 'Select your birthdate'
+        : DateFormat('yyyy-MM-dd').format(selectedDate!);
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Age Calculator')),
+      drawer: AppDrawer(context),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text(birthDateStr, style: TextStyle(fontSize: 18)),
+            ElevatedButton(onPressed: () => _selectDate(context), child: Text('Pick Date')),
+            SizedBox(height: 20),
+            Text(ageResult, style: TextStyle(fontSize: 18)),
+          ],
+        ),
+      ),
+    );
+  }
+}
