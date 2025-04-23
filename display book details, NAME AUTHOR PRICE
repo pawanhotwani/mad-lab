@@ -1,0 +1,95 @@
+//Create a flutter app to display book details as given below for at least 6 to 7 books. The
+user should scroll down to view the books://
+
+import 'package:flutter/material.dart';
+
+void main() => runApp(BookListApp());
+
+class BookListApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Book List',
+      home: BookListScreen(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class Book {
+  final String name;
+  final String author;
+  final double price;
+  final String imageUrl;
+
+  Book({required this.name, required this.author, required this.price, required this.imageUrl});
+}
+
+class BookListScreen extends StatelessWidget {
+  final List<Book> books = [
+    Book(
+      name: "The Alchemist",
+      author: "Paulo Coelho",
+      price: 299.0,
+      imageUrl: "https://m.media-amazon.com/images/I/51Z0nLAfLmL.jpg",
+    ),
+    Book(
+      name: "Atomic Habits",
+      author: "James Clear",
+      price: 399.0,
+      imageUrl: "https://m.media-amazon.com/images/I/91bYsX41DVL.jpg",
+    ),
+    Book(
+      name: "Wings of Fire",
+      author: "A.P.J. Abdul Kalam",
+      price: 350.0,
+      imageUrl: "https://m.media-amazon.com/images/I/81drfTT9ZfL.jpg",
+    ),
+    Book(
+      name: "Rich Dad Poor Dad",
+      author: "Robert Kiyosaki",
+      price: 450.0,
+      imageUrl: "https://m.media-amazon.com/images/I/81bsw6fnUiL.jpg",
+    ),
+    Book(
+      name: "Ikigai",
+      author: "Héctor García",
+      price: 280.0,
+      imageUrl: "https://m.media-amazon.com/images/I/8166g+eU3sL.jpg",
+    ),
+    Book(
+      name: "Deep Work",
+      author: "Cal Newport",
+      price: 370.0,
+      imageUrl: "https://m.media-amazon.com/images/I/81rj5U9PgUL.jpg",
+    ),
+    Book(
+      name: "You Can Win",
+      author: "Shiv Khera",
+      price: 275.0,
+      imageUrl: "https://m.media-amazon.com/images/I/71fN3Vdzs+L.jpg",
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('📚 Book List')),
+      body: ListView.builder(
+        itemCount: books.length,
+        itemBuilder: (context, index) {
+          final book = books[index];
+          return Card(
+            margin: EdgeInsets.all(10),
+            child: ListTile(
+              leading: Image.network(book.imageUrl, width: 60, fit: BoxFit.cover),
+              title: Text(book.name),
+              subtitle: Text("Author: ${book.author}\nPrice: ₹${book.price}"),
+              isThreeLine: true,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
