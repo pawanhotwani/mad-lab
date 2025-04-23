@@ -1,0 +1,139 @@
+//Create a flutter app to demonstrate the following:
+A. Mark text box should not accept negative numbers
+B. Name and subject field should only accept characters from ‘A’ to ‘Z’ or ‘a’ to ‘z’//
+
+
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(BookStudentApp());
+}
+
+class BookStudentApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Book Details',
+      home: BookStudentForm(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class BookStudentForm extends StatefulWidget {
+  @override
+  _BookStudentFormState createState() => _BookStudentFormState();
+}
+
+class _BookStudentFormState extends State<BookStudentForm> {
+  final _formKey = GlobalKey<FormState>();
+
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController subjectController = TextEditingController();
+  final TextEditingController marksController = TextEditingController();
+  final TextEditingController bookNameController = TextEditingController();
+  final TextEditingController authorController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+  final TextEditingController quantityController = TextEditingController();
+
+  String? selectedCategory;
+
+  String? _validateAlphabet(String? value, String field) {
+    if (value == null || value.trim().isEmpty) return '$field is required';
+    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+      return '$field should contain only letters';
+    }
+    return null;
+  }
+
+  String? _validateNonNegative(String? value, String field) {
+    if (value == null || value.isEmpty) return '$field is required';
+    final number = double.tryParse(value);
+    if (number == null || number < 0) return '$field should not be negative';
+    return null;
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Form submitted successfully!'), backgroundColor: Colors.green),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Book & Student Form')),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              // Text('📘 Book Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              // TextFormField(
+              //   controller: bookNameController,
+              //   decoration: InputDecoration(labelText: 'Book Name'),
+              //   validator: (value) => _validateAlphabet(value, 'Book Name'),
+              // ),
+              // TextFormField(
+              //   controller: authorController,
+              //   decoration: InputDecoration(labelText: 'Author'),
+              //   validator: (value) => _validateAlphabet(value, 'Author'),
+              // ),
+              // TextFormField(
+              //   controller: priceController,
+              //   decoration: InputDecoration(labelText: 'Price'),
+              //   keyboardType: TextInputType.number,
+              //   validator: (value) => _validateNonNegative(value, 'Price'),
+              // ),
+              // TextFormField(
+              //   controller: quantityController,
+              //   decoration: InputDecoration(labelText: 'Quantity'),
+              //   keyboardType: TextInputType.number,
+              //   validator: (value) => _validateNonNegative(value, 'Quantity'),
+              // ),
+              SizedBox(height: 20),
+              Text('👨‍🎓 Books Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              TextFormField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: 'Name'),
+                validator: (value) => _validateAlphabet(value, 'Name'),
+              ),
+              TextFormField(
+                controller: subjectController,
+                decoration: InputDecoration(labelText: 'Subject'),
+                validator: (value) => _validateAlphabet(value, 'Subject'),
+              ),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(labelText: 'Category'),
+                value: selectedCategory,
+                items: ['IA', 'IN'].map((category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedCategory = value;
+                  });
+                },
+                validator: (value) => value == null ? 'Please select a category' : null,
+              ),
+              TextFormField(
+                controller: marksController,
+                decoration: InputDecoration(labelText: 'Marks'),
+                keyboardType: TextInputType.number,
+                validator: (value) => _validateNonNegative(value, 'Marks'),
+              ),
+              SizedBox(height: 24),
+              ElevatedButton(onPressed: _submitForm, child: Text('Submit')),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
